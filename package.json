@@ -23,6 +23,7 @@
     "extension.js",
     "lib/",
     "media/",
+    "scripts/",
     "vim/",
     "README.md",
     "INSTALL.md"

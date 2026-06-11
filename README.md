@@ -43,7 +43,7 @@ By default:
 4. In the Extension Development Host window, open the included demo script:
 
    ```text
-   examples/testme.bash
+   examples/testme.demo
    ```
 
 5. Put the cursor on the first line and press `PageDown`.
@@ -52,7 +52,7 @@ By default:
 
 ## Included Example
 
-The repository includes a sample demo script at [examples/testme.bash](examples/testme.bash).
+The repository includes a sample demo script at [examples/testme.demo](examples/testme.demo).
 It uses values from [demo-vars.json](demo-vars.json), which is the default variables file.
 
 A smaller example looks like this:
@@ -106,21 +106,33 @@ In that example:
 The package also exposes a `tmux-demo-runner` command for SSH/Linux environments where VS Code is not available:
 
 ```bash
-tmux-demo-runner run-line examples/testme.bash 12
-tmux-demo-runner run-range examples/testme.bash 12 18
-tmux-demo-runner paste-line examples/testme.bash 12
-tmux-demo-runner paste-range examples/testme.bash 12 18
+tmux-demo-runner run-line examples/testme.demo 12
+tmux-demo-runner run-range examples/testme.demo 12 18
+tmux-demo-runner paste-line examples/testme.demo 12
+tmux-demo-runner paste-range examples/testme.demo 12 18
 ```
 
 Line numbers are 1-based. Optional flags:
 
 ```bash
-tmux-demo-runner run-line demo.bash 12 --tmux-pane :.+ --variables-file demo-vars.json --workspace-folder "$PWD"
+tmux-demo-runner run-line demo.bash 12 --tmux-pane :.+ --variables-file demo-vars.json --workspace-folder "$PWD" --input demo_note=value
 ```
 
 ### Vim
 
 The Vim plugin lives in [vim/plugin/tmux-demo-runner.vim](vim/plugin/tmux-demo-runner.vim). It shells out to the CLI, so make sure `tmux-demo-runner` is on your `PATH`.
+
+For a local Vim install after cloning this repo:
+
+```bash
+scripts/install-vim-local.sh
+```
+
+The script runs the local checks, symlinks the CLI into `~/.local/bin`, installs the Vim plugin for your user, and appends the suggested mappings to `~/.vimrc`.
+
+When a Vim-run line needs `{{input:name}}`, the Vim plugin prompts in Vim's command line, caches the value for the current Vim session, and passes it to the CLI. Inputs whose names contain `password`, `passwd`, `secret`, `token`, or `key` use `inputsecret()`.
+
+Because the Vim frontend invokes the external CLI with the file path, save the buffer before running or pasting lines. If the buffer has unsaved changes, the plugin warns and does not execute anything.
 
 Commands:
 

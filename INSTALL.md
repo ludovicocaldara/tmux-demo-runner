@@ -30,13 +30,13 @@ This project is currently dependency-free. You do not need to run `npm install` 
 5. In the new Extension Development Host window, open a demo script with **File > Open File...**. For example, open:
 
    ```text
-   /Users/lcaldara/Documents/github/tmux-vim-mappings/testme.bash
+   /Users/lcaldara/Documents/github/tmux-vim-mappings/testme.demo
    ```
 
 6. To test variable substitution, open or copy the included example instead:
 
    ```text
-   /Users/lcaldara/Documents/github/tmux-demo-runner-vscode/examples/testme.bash
+   /Users/lcaldara/Documents/github/tmux-demo-runner-vscode/examples/testme.demo
    ```
 
    It uses values from:
@@ -88,7 +88,7 @@ The CLI uses the same runner as the VS Code extension and is the base for Vim/SS
 
 ```bash
 node bin/tmux-demo-runner --help
-node bin/tmux-demo-runner run-line examples/testme.bash 1
+node bin/tmux-demo-runner run-line examples/testme.demo 1
 ```
 
 The second command expects a running tmux session. Line numbers are 1-based.
@@ -96,24 +96,78 @@ The second command expects a running tmux session. Line numbers are 1-based.
 When the package is linked or globally installed, the command name is:
 
 ```bash
-tmux-demo-runner run-line examples/testme.bash 1
+tmux-demo-runner run-line examples/testme.demo 1
 ```
+
+## Install for Vim
+
+Clone this repository first:
+
+```bash
+git clone https://github.com/ludovicocaldara/tmux-demo-runner.git
+cd tmux-demo-runner
+```
+
+The runner is dependency-free, so building it for local use means checking the JavaScript files and putting the CLI wrapper on your `PATH`:
+
+```bash
+npm run check
+mkdir -p "$HOME/.local/bin"
+ln -sf "$PWD/bin/tmux-demo-runner" "$HOME/.local/bin/tmux-demo-runner"
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Add the `export PATH=...` line to your shell startup file, such as `~/.zshrc` or `~/.bashrc`, if `~/.local/bin` is not already on your `PATH`.
+
+Install the Vim plugin for your local user:
+
+```bash
+mkdir -p "$HOME/.vim/pack/tmux-demo-runner/start/tmux-demo-runner/plugin"
+cp vim/plugin/tmux-demo-runner.vim "$HOME/.vim/pack/tmux-demo-runner/start/tmux-demo-runner/plugin/"
+```
+
+Then add mappings to `~/.vimrc`:
+
+```vim
+nmap <PageDown> <Plug>(TmuxDemoRunnerRunNext)
+xmap <PageDown> <Plug>(TmuxDemoRunnerRunRange)
+nmap <PageUp> <Plug>(TmuxDemoRunnerPasteLine)
+xmap <PageUp> <Plug>(TmuxDemoRunnerPasteRange)
+```
+
+To target a specific pane:
+
+```vim
+let g:tmux_demo_runner_tmux_pane = ':.+'
+```
+
+You can automate every step after cloning by running:
+
+```bash
+scripts/install-vim-local.sh
+```
+
+The script symlinks the CLI into `~/.local/bin`, installs the Vim plugin under `~/.vim/pack`, appends the mappings to `~/.vimrc` if they are not already present, and adds `~/.local/bin` to `~/.zshrc` or `~/.bashrc` when needed.
+
+When a Vim-run line needs `{{input:name}}`, enter the value at Vim's command-line prompt. The plugin caches input values for the current Vim session and passes them to the CLI.
+
+Save the Vim buffer before running or pasting lines. The plugin refuses to execute when the buffer has unsaved changes so the external runner cannot accidentally read stale file contents.
 
 ## Use from Vim
 
-The Vim plugin file is included at:
+After installation, Vim loads this plugin file from your user package directory:
 
 ```text
-vim/plugin/tmux-demo-runner.vim
+~/.vim/pack/tmux-demo-runner/start/tmux-demo-runner/plugin/tmux-demo-runner.vim
 ```
 
-For local development, add this repository's `vim` directory to Vim's runtime path:
+For local development without installing the plugin, add this repository's `vim` directory to Vim's runtime path:
 
 ```vim
-set runtimepath+=/Users/lcaldara/Documents/github/tmux-demo-runner-vscode/vim
+set runtimepath+=/path/to/tmux-demo-runner/vim
 ```
 
-Then add mappings if you want the same stepping keys:
+Add mappings if you want the same stepping keys:
 
 ```vim
 nmap <PageDown> <Plug>(TmuxDemoRunnerRunNext)

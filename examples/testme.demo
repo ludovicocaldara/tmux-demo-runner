@@ -1,0 +1,50 @@
+---# tmux-demo-runner variablesFile=../demo-vars.json
+---# the command above sets a local variable file
+---#
+---# lines starting with triple dash are executed as-is by the shell
+---# As those ones are comments, there are no visible effects 
+---#
+---# however those starting with triple dash and double hash are displayed in tmux message bar:
+--- ## Hello World is displayed as an ephemeral message
+---#
+---# the variables are substituted by taking them from the variable file
+--- ## Demo: {{demo_name}} by {{presenter}}
+---#
+---# a black line is send as 'Enter'. You need a comment (---#) to send nothing
+
+---#
+---# lines starting with triple dash are executed as local shell and can be tmux or other commands
+---tmux set -g status-left "Look at this nice demo"
+---tmux clock-mode
+---tmux split-window
+---tmux select-pane -t {{target_pane}}
+---sleep 3
+---# while normal lines without are sent as-is (variable substitution always applies)
+echo "see?"
+---#
+---# variables can be nested in JSON. Useful for patterns like \{{host1.ip_address}}
+echo "{{message.plain_line}}"
+echo "Shell variables still work normally: ${USER}"
+---#
+---# the runner also supports input variables. you enter them once and reuse them for the whole session
+echo "Runtime input: {{input:reuse_me}}"
+echo "Runtime input: {{input:reuse_me}}"
+---# you can also set them in the demo script so you don't have to type them
+---# tmux-demo-runner setInput demo_note "This value was preloaded by setInput"
+echo "Runtime input preset: {{input:demo_note}}"
+---#
+---# of course, you can clear an input variable
+---# tmux-demo-runner clearInput demo_note
+echo "Runtime input after clearInput asks again: {{input:demo_note}}"
+---# or clear all the input variables in the cache
+---# tmux-demo-runner clearInput
+---#
+---# commands sent to the tmux session are regular terminal inputs sent with send-keys, e.g. they can span multiple lines
+date \
+
+---tmux select-pane -t :.0
+
+---tmux select-pane -t :.1
+exit
+
+---#

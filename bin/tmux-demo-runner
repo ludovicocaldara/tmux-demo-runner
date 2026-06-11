@@ -35,7 +35,8 @@ async function main() {
     warn: (message) => console.error(message),
     error: (message) => console.error(message),
     status: (message) => console.error(message),
-    runShell: checkedRunShell
+    runShell: checkedRunShell,
+    inputValues: options.inputs
   });
   const context = runner.createVariableContext({
     filePath,
@@ -130,6 +131,9 @@ function parseOptions(args) {
       case '--workspace-folder':
         options.workspaceFolder = path.resolve(requireValue(args, ++index, arg));
         break;
+      case '--input':
+        addInputOption(options, requireValue(args, ++index, arg));
+        break;
       default:
         options.positionals.push(arg);
         break;
@@ -137,6 +141,19 @@ function parseOptions(args) {
   }
 
   return options;
+}
+
+function addInputOption(options, value) {
+  const separatorIndex = value.indexOf('=');
+  if (separatorIndex < 1) {
+    throw new Error('--input requires a name=value pair.');
+  }
+
+  if (!options.inputs) {
+    options.inputs = {};
+  }
+
+  options.inputs[value.slice(0, separatorIndex)] = value.slice(separatorIndex + 1);
 }
 
 function requireValue(args, index, option) {
@@ -156,5 +173,6 @@ function printUsage() {
 Options:
   --tmux-pane <target>        Optional tmux pane target, for example :.+ or %1
   --variables-file <path>     Default variables JSON file when the demo has no metadata marker
-  --workspace-folder <path>   Base path for default relative variables files`);
+  --workspace-folder <path>   Base path for default relative variables files
+  --input <name=value>        Preload an input placeholder value; can be repeated`);
 }
