@@ -4,6 +4,11 @@
   "description": "Run tmux-style demo scripts one line or selection at a time from VS Code.",
   "version": "0.0.1",
   "publisher": "ludovicocaldara",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ludovicocaldara/tmux-demo-runner/"
+  },
+
   "engines": {
     "vscode": "^1.92.0"
   },
