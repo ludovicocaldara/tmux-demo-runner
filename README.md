@@ -4,10 +4,6 @@ Run tmux-style demo scripts from VS Code, Vim, or a plain shell while the actual
 
 This project is a VS Code-friendly descendant of `tmux-vim-mappings`: your editor becomes the presenter console, tmux remains the live demo environment, and the demo script syntax stays compatible with the original Vim workflow. The demo language is implemented once in a shared Node runner, with VS Code and Vim acting as thin frontends.
 
-![tmux Demo Runner demo placeholder](media/demo.gif)
-
-> TODO: Replace `media/demo.gif` with a recording of VS Code driving a tmux demo session.
-
 ## How It Works
 
 Open, create, or edit a demo script in VS Code or Vim, start a tmux session in a terminal, then run the current script line or selected lines in tmux. The cursor advances to the next non-executed line so a presenter can step through a demo with a keyboard, clicker, or command/action palette.
