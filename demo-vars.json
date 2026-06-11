@@ -1,0 +1,8 @@
+{
+  "demo_name": "tmux Demo Runner",
+  "presenter": "Ludo",
+  "target_pane": ":.1",
+  "message": {
+    "plain_line": "This line was rendered from demo-vars.json"
+  }
+}

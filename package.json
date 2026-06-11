@@ -1,0 +1,87 @@
+{
+  "name": "tmux-demo-runner",
+  "displayName": "tmux Demo Runner",
+  "description": "Run tmux-style demo scripts one line or selection at a time from VS Code.",
+  "version": "0.0.1",
+  "publisher": "ludovicocaldara",
+  "engines": {
+    "vscode": "^1.92.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:tmuxDemoRunner.runNext",
+    "onCommand:tmuxDemoRunner.pasteSelection"
+  ],
+  "main": "./extension.js",
+  "bin": {
+    "tmux-demo-runner": "./bin/tmux-demo-runner"
+  },
+  "files": [
+    "bin/",
+    "extension.js",
+    "lib/",
+    "media/",
+    "vim/",
+    "README.md",
+    "INSTALL.md"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "tmuxDemoRunner.runNext",
+        "title": "tmux Demo Runner: Run Next"
+      },
+      {
+        "command": "tmuxDemoRunner.pasteSelection",
+        "title": "tmux Demo Runner: Paste Selection"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "tmuxDemoRunner.runNext",
+        "key": "pagedown",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "tmuxDemoRunner.pasteSelection",
+        "key": "pageup",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "tmux Demo Runner",
+      "properties": {
+        "tmuxDemoRunner.target": {
+          "type": "string",
+          "enum": [
+            "tmux",
+            "vscodeTerminal"
+          ],
+          "default": "tmux",
+          "description": "Where plain demo lines are sent. Use tmux for the original presenter workflow or vscodeTerminal for an integrated-terminal fallback."
+        },
+        "tmuxDemoRunner.terminalName": {
+          "type": "string",
+          "default": "tmux Demo Runner",
+          "description": "Name of the VS Code integrated terminal used by the runner."
+        },
+        "tmuxDemoRunner.tmuxPane": {
+          "type": "string",
+          "default": "",
+          "description": "Optional tmux pane target, for example :.+ or %1. Leave empty for the active pane."
+        },
+        "tmuxDemoRunner.variablesFile": {
+          "type": "string",
+          "default": "demo-vars.json",
+          "description": "JSON file used for {{name}} substitutions. Relative paths are resolved from the workspace folder, or from the demo file folder when there is no workspace."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "check": "node --check extension.js && node --check lib/runner.js && node --check bin/tmux-demo-runner"
+  },
+  "devDependencies": {}
+}

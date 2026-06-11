@@ -1,0 +1,160 @@
+#!/usr/bin/env node
+
+const path = require('path');
+const {
+  DemoRunner,
+  createTmuxAdapter,
+  pasteTextToTmux,
+  readFileLines,
+  runInLocalShell
+} = require('../lib/runner');
+
+main().catch((error) => {
+  console.error(error.message || error);
+  process.exit(1);
+});
+
+async function main() {
+  const args = process.argv.slice(2);
+  const command = args.shift();
+
+  if (!command || command === '--help' || command === '-h') {
+    printUsage();
+    return;
+  }
+
+  const options = parseOptions(args);
+  const filePath = options.positionals[0] ? path.resolve(options.positionals[0]) : '';
+
+  if (!filePath) {
+    throw new Error('A demo file path is required.');
+  }
+
+  const lines = readFileLines(filePath);
+  const runner = new DemoRunner({
+    warn: (message) => console.error(message),
+    error: (message) => console.error(message),
+    status: (message) => console.error(message),
+    runShell: checkedRunShell
+  });
+  const context = runner.createVariableContext({
+    filePath,
+    workspaceFolder: options.workspaceFolder || process.cwd(),
+    variablesFile: options.variablesFile,
+    lines
+  });
+
+  switch (command) {
+    case 'run-line':
+      await runSelectedLines(runner, context, [getLine(lines, options.positionals[1])], options);
+      break;
+    case 'run-range':
+      await runSelectedLines(runner, context, getRange(lines, options.positionals[1], options.positionals[2]), options);
+      break;
+    case 'paste-line':
+      await pasteSelectedLines(runner, context, [getLine(lines, options.positionals[1])]);
+      break;
+    case 'paste-range':
+      await pasteSelectedLines(runner, context, getRange(lines, options.positionals[1], options.positionals[2]));
+      break;
+    default:
+      throw new Error(`Unknown command: ${command}`);
+  }
+}
+
+async function runSelectedLines(runner, context, selectedLines, options) {
+  const adapter = createTmuxAdapter({
+    tmuxPane: options.tmuxPane || '',
+    runShell: checkedRunShell,
+    displayMessage: (message) => console.error(message)
+  });
+  await runner.runLines(selectedLines, context, adapter);
+}
+
+async function pasteSelectedLines(runner, context, selectedLines) {
+  const resolvedText = (await runner.resolveLines(selectedLines, context)).join('\n');
+  await pasteTextToTmux(resolvedText, { runShell: checkedRunShell });
+}
+
+async function checkedRunShell(command) {
+  const result = await runInLocalShell(command);
+  if (result.code !== 0) {
+    const detail = result.stderr || result.stdout || `Command failed with exit code ${result.code}`;
+    throw new Error(detail.trim());
+  }
+  return result;
+}
+
+function getLine(lines, lineNumberText) {
+  const lineNumber = parseLineNumber(lineNumberText);
+  if (lineNumber < 1 || lineNumber > lines.length) {
+    throw new Error(`Line ${lineNumber} is outside the file.`);
+  }
+  return lines[lineNumber - 1];
+}
+
+function getRange(lines, startText, endText) {
+  const start = parseLineNumber(startText);
+  const end = parseLineNumber(endText);
+  if (start > end) {
+    throw new Error('Range start must be before range end.');
+  }
+  if (start < 1 || end > lines.length) {
+    throw new Error(`Range ${start}-${end} is outside the file.`);
+  }
+  return lines.slice(start - 1, end);
+}
+
+function parseLineNumber(value) {
+  const lineNumber = Number.parseInt(value, 10);
+  if (!Number.isInteger(lineNumber)) {
+    throw new Error('A 1-based line number is required.');
+  }
+  return lineNumber;
+}
+
+function parseOptions(args) {
+  const options = {
+    positionals: []
+  };
+
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    switch (arg) {
+      case '--tmux-pane':
+        options.tmuxPane = requireValue(args, ++index, arg);
+        break;
+      case '--variables-file':
+        options.variablesFile = requireValue(args, ++index, arg);
+        break;
+      case '--workspace-folder':
+        options.workspaceFolder = path.resolve(requireValue(args, ++index, arg));
+        break;
+      default:
+        options.positionals.push(arg);
+        break;
+    }
+  }
+
+  return options;
+}
+
+function requireValue(args, index, option) {
+  if (index >= args.length) {
+    throw new Error(`${option} requires a value.`);
+  }
+  return args[index];
+}
+
+function printUsage() {
+  console.log(`Usage:
+  tmux-demo-runner run-line <file> <line> [--tmux-pane <target>]
+  tmux-demo-runner run-range <file> <start-line> <end-line> [--tmux-pane <target>]
+  tmux-demo-runner paste-line <file> <line>
+  tmux-demo-runner paste-range <file> <start-line> <end-line>
+
+Options:
+  --tmux-pane <target>        Optional tmux pane target, for example :.+ or %1
+  --variables-file <path>     Default variables JSON file when the demo has no metadata marker
+  --workspace-folder <path>   Base path for default relative variables files`);
+}
