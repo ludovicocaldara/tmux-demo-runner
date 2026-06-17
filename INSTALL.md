@@ -2,12 +2,22 @@
 
 This project is currently dependency-free. You do not need to run `npm install` for the basic development test flow.
 
+## Clone the Repository
+
+Choose any parent directory you use for local projects, then clone the repository and enter it:
+
+```bash
+cd /path/to/projects
+git clone https://github.com/ludovicocaldara/tmux-demo-runner.git
+cd tmux-demo-runner
+```
+
 ## Quick Development Test
 
-1. Open this folder in VS Code:
+1. Open the cloned repository in VS Code:
 
    ```bash
-   code /Users/lcaldara/Documents/github/tmux-demo-runner-vscode
+   code .
    ```
 
 2. Check the extension, shared runner, and CLI syntax:
@@ -30,19 +40,19 @@ This project is currently dependency-free. You do not need to run `npm install` 
 5. In the new Extension Development Host window, open a demo script with **File > Open File...**. For example, open:
 
    ```text
-   /Users/lcaldara/Documents/github/tmux-vim-mappings/testme.demo
+   /path/to/your/demo/testme.demo
    ```
 
 6. To test variable substitution, open or copy the included example instead:
 
    ```text
-   /Users/lcaldara/Documents/github/tmux-demo-runner-vscode/examples/testme.demo
+   examples/testme.demo
    ```
 
    It uses values from:
 
    ```text
-   /Users/lcaldara/Documents/github/tmux-demo-runner-vscode/demo-vars.json
+   demo-vars.json
    ```
 
    The example declares that file with this metadata line:
@@ -100,13 +110,6 @@ tmux-demo-runner run-line examples/testme.demo 1
 ```
 
 ## Install for Vim
-
-Clone this repository first:
-
-```bash
-git clone https://github.com/ludovicocaldara/tmux-demo-runner.git
-cd tmux-demo-runner
-```
 
 The runner is dependency-free, so building it for local use means checking the JavaScript files and putting the CLI wrapper on your `PATH`:
 
@@ -269,14 +272,13 @@ For day-to-day development, `F5` is enough. To install the extension into your n
 2. Package the extension:
 
    ```bash
-   cd /Users/lcaldara/Documents/github/tmux-demo-runner-vscode
    vsce package
    ```
 
 3. Install the generated VSIX:
 
    ```bash
-   code --install-extension tmux-demo-runner-0.0.1.vsix
+   code --install-extension tmux-demo-runner-0.0.2.vsix
    ```
 
 You can also install the VSIX from VS Code with **Extensions: Install from VSIX...**.

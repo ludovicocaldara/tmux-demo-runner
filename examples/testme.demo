@@ -20,7 +20,7 @@
 ---tmux select-pane -t {{target_pane}}
 ---sleep 3
 ---# while normal lines without are sent as-is (variable substitution always applies)
-echo "see?"
+echo "see?";
 ---#
 ---# variables can be nested in JSON. Useful for patterns like \{{host1.ip_address}}
 echo "{{message.plain_line}}"

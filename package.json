@@ -2,7 +2,7 @@
   "name": "tmux-demo-runner",
   "displayName": "tmux Demo Runner",
   "description": "Run tmux-style demo scripts one line or selection at a time from VS Code.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "ludovicocaldara",
   "repository": {
     "type": "git",

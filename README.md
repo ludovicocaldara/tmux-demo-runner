@@ -22,7 +22,7 @@ By default:
 1. Open this extension project in VS Code:
 
    ```bash
-   code /Users/lcaldara/Documents/github/tmux-demo-runner-vscode
+   code .
    ```
 
 2. Start a tmux session in a terminal:
