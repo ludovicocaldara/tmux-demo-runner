@@ -106,7 +106,13 @@ tmux-demo-runner run-line examples/testme.demo 12
 tmux-demo-runner run-range examples/testme.demo 12 18
 tmux-demo-runner paste-line examples/testme.demo 12
 tmux-demo-runner paste-range examples/testme.demo 12 18
+tmux-demo-runner render examples/testme.demo
 ```
+
+`render` prints the complete demo file after variable substitution without
+executing it. It follows `setInput` and `clearInput` directives in order and
+prompts for missing runtime inputs; password-like input names do not echo
+typed characters. Use `--input name=value` to preload an input.
 
 Line numbers are 1-based. Optional flags:
 

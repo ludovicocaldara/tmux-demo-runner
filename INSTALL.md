@@ -103,6 +103,17 @@ node bin/tmux-demo-runner run-line examples/testme.demo 1
 
 The second command expects a running tmux session. Line numbers are 1-based.
 
+To preview the complete demo after variable substitution without executing it:
+
+```bash
+tmux-demo-runner render examples/testme.demo
+```
+
+The command reads the variables file declared in the demo header, prompts for
+runtime inputs, and preserves the demo file's line structure. Password-like
+input names are prompted without echoing typed characters. Use `--input
+name=value` to preload an input in non-interactive use.
+
 When the package is linked or globally installed, the command name is:
 
 ```bash

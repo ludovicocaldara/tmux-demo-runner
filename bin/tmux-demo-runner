@@ -58,6 +58,9 @@ async function main() {
     case 'paste-range':
       await pasteSelectedLines(runner, context, getRange(lines, options.positionals[1], options.positionals[2]));
       break;
+    case 'render':
+      process.stdout.write((await runner.renderLines(lines, context)).join('\n'));
+      break;
     default:
       throw new Error(`Unknown command: ${command}`);
   }
@@ -169,6 +172,7 @@ function printUsage() {
   tmux-demo-runner run-range <file> <start-line> <end-line> [--tmux-pane <target>]
   tmux-demo-runner paste-line <file> <line>
   tmux-demo-runner paste-range <file> <start-line> <end-line>
+  tmux-demo-runner render <file>
 
 Options:
   --tmux-pane <target>        Optional tmux pane target, for example :.+ or %1
